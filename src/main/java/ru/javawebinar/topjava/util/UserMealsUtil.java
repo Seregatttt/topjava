@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.TimeUtil.isBetweenHalfOpen;
 
@@ -32,40 +31,48 @@ public class UserMealsUtil {
     }
 
     private static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        Map<LocalDateTime, UserMealWithExcess> map = new HashMap<>();
-        Map<LocalDate, Integer> mapCalories = new HashMap<>();
-        for (UserMeal userMeal : meals) {
-            if (isBetweenHalfOpen(userMeal.getDateTime().toLocalTime(), startTime, endTime)) {
-                mapCalories.merge(userMeal.getDateTime().toLocalDate(), userMeal.getCalories(), (a, b) -> a + b);
-                map.put(userMeal.getDateTime(), new UserMealWithExcess(userMeal.getDateTime(),
-                        userMeal.getDescription(), userMeal.getCalories(), false));
-            }
-        }
-        System.out.println("mapCalories=" + mapCalories);
+        Map<LocalDate, Integer> mapDayCalories = new HashMap<>();
 
-        for (Map.Entry<LocalDateTime, UserMealWithExcess> item : map.entrySet()) {
-            if (mapCalories.get(item.getValue().getDateTime().toLocalDate()) > caloriesPerDay) {
-                item.getValue().setExcess(true);
-            }
-        }
-        return new ArrayList<>(map.values());
+        loopForMeals(meals, startTime, endTime,
+                userMeal -> mapDayCalories.merge(userMeal.getDateTime().toLocalDate(), userMeal.getCalories(), (a, b) -> a + b));
+
+        ArrayList<UserMealWithExcess> listWithExcess = new ArrayList<>();
+
+        loopForMeals(meals, startTime, endTime,
+                userMeal -> listWithExcess.add(new UserMealWithExcess(userMeal.getDateTime(), userMeal.getDescription(), userMeal.getCalories(),
+                        mapDayCalories.get(userMeal.getDateTime().toLocalDate()) > caloriesPerDay)));
+        return listWithExcess;
     }
 
     private static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
 
-        Map<LocalDate, Integer> mapCalories = new HashMap<>();
-        List<UserMealWithExcess> list = meals.stream()
+        Map<LocalDate, Integer> mapDayCalories = meals.stream()
                 .filter(x -> isBetweenHalfOpen(x.getDateTime().toLocalTime(), startTime, endTime))
-                .peek(userMeal -> mapCalories.merge(userMeal.getDateTime().toLocalDate(), userMeal.getCalories(), (a, b) -> a + b))
-                .map(x -> new UserMealWithExcess(x.getDateTime(),
-                        x.getDescription(), x.getCalories(), false))
-                .collect(Collectors.toList());
+                .collect(HashMap::new,
+                        (map, item) -> map.merge(item.getDateTime().toLocalDate(), item.getCalories(), (a, b) -> a + b),
+                        (a, b) -> {
+                        });
 
-        for (UserMealWithExcess item : list) {
-            if (mapCalories.get(item.getDateTime().toLocalDate()) > caloriesPerDay) {
-                item.setExcess(true);
+        return meals.stream()
+                .filter(x -> isBetweenHalfOpen(x.getDateTime().toLocalTime(), startTime, endTime))
+                .collect(
+                        ArrayList::new,
+                        (list, item) -> list.add(new UserMealWithExcess(item.getDateTime(), item.getDescription(), item.getCalories(),
+                                mapDayCalories.get(item.getDateTime().toLocalDate()) > caloriesPerDay)),
+                        (a, b) -> {
+                        });
+    }
+
+    @FunctionalInterface
+    interface UserMealExecute<T> {
+        void doExecute(T t);
+    }
+
+    private static <T> void loopForMeals(Collection<T> collection, LocalTime startTime, LocalTime endTime, UserMealExecute<T> sw) {
+        for (T item : collection) {
+            if (isBetweenHalfOpen(((UserMeal) item).getDateTime().toLocalTime(), startTime, endTime)) {
+                sw.doExecute(item);
             }
         }
-        return list;
     }
 }
