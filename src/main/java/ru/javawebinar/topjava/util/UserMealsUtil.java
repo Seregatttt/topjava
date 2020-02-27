@@ -68,10 +68,10 @@ public class UserMealsUtil {
         void doExecute(T t);
     }
 
-    private static <T> void loopForMeals(Collection<T> collection, LocalTime startTime, LocalTime endTime, UserMealExecute<T> sw) {
+    private static <T> void loopForMeals(Collection<T> collection, LocalTime startTime, LocalTime endTime, UserMealExecute<T> um) {
         for (T item : collection) {
             if (isBetweenHalfOpen(((UserMeal) item).getDateTime().toLocalTime(), startTime, endTime)) {
-                sw.doExecute(item);
+                um.doExecute(item);
             }
         }
     }
