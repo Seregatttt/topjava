@@ -4,7 +4,7 @@
     <title>Users</title>
 </head>
 <body>
-<h3><a href="index.html">Home</a></h3>
+<h3><a href="/topjava">Home</a></h3>
 <hr>
 <h2>Users1</h2>
 </body>
