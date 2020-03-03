@@ -1,9 +1,7 @@
 package ru.javawebinar.topjava.storage;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealTo;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface Storage {
@@ -16,10 +14,6 @@ public interface Storage {
 
     void delete(int uuid);
 
-    Collection<Meal> getAll();
-
-    List<MealTo> getAllMealTo();
-
-    int size();
+    List<Meal> getAll();
 
 }

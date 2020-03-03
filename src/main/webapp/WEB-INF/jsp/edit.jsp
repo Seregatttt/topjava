@@ -1,5 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@taglib uri="http://example.com/functions" prefix="f" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -15,13 +15,13 @@
 
 <form method="POST" action='meals' name="frmMeal">
     <dl class="cf">
-        <dt>uuid :</dt>
+        <dt></dt>
         <dd><input
-                type="text" name="uuid" readonly
+                type="hidden" name="uuid"
                 value="<c:out value="${meal.uuid}" />"/>
         <dt>datetime :</dt>
         <dd><input type="text" name="datetime"
-                   value="${meal.dateTime.format( DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm"))}"/>
+                   value="${f:formatLocalDateTime(meal.dateTime)}"/>
         </dd>
         <dt>description :</dt>
         <dd><input

@@ -22,11 +22,8 @@ public class MealTo {
     }
 
     public MealTo(int uuid, LocalDateTime dateTime, String description, int calories, boolean excess) {
+        this(dateTime,description,calories,excess);
         this.uuid = uuid;
-        this.dateTime = dateTime;
-        this.description = description;
-        this.calories = calories;
-        this.excess = excess;
     }
 
     public int getUuid() {

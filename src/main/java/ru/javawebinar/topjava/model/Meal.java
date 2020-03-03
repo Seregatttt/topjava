@@ -24,10 +24,8 @@ public class Meal {
     }
 
     public Meal(int uuid, LocalDateTime dateTime, String description, int calories) {
+        this(dateTime,description,calories);
         this.uuid = uuid;
-        this.dateTime = dateTime;
-        this.description = description;
-        this.calories = calories;
     }
 
     public int getUuid() {
