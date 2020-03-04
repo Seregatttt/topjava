@@ -18,13 +18,13 @@ public class Meal {
     }
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
-        this.dateTime = dateTime;
-        this.description = description;
-        this.calories = calories;
+        this(0,dateTime,description,calories);
     }
 
     public Meal(int uuid, LocalDateTime dateTime, String description, int calories) {
-        this(dateTime,description,calories);
+        this.dateTime = dateTime;
+        this.description = description;
+        this.calories = calories;
         this.uuid = uuid;
     }
 

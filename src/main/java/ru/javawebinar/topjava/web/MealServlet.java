@@ -7,6 +7,7 @@ import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.storage.Storage;
 import ru.javawebinar.topjava.util.TimeUtil;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,13 @@ import static ru.javawebinar.topjava.util.MealsUtil.filteredByStreams;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
-    private Storage storageHashMap = MealsTestData.getStorageHashMap();
+    private Storage storageHashMap;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        storageHashMap = MealsTestData.getStorageHashMap();
+    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -50,7 +57,7 @@ public class MealServlet extends HttpServlet {
         String uuid = request.getParameter("mealsId");
 
         String url = "";
-        switch (String.valueOf(action)) {
+        switch (String.valueOf(action != null ? action : "")  ) {
             case "insert":
                 url = "/WEB-INF/jsp/edit.jsp";
                 request.setAttribute("meal", Meal.EMPTY);
