@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Repository
@@ -23,7 +24,12 @@ public class InMemoryUserRepository implements UserRepository {
     private Map<Integer, User> repository = new ConcurrentHashMap<>();
 
     {
-        UsersUtil.USERS.forEach(this::save);
+        UsersUtil.USERS.forEach(new Consumer<User>() {
+            @Override
+            public void accept(User user) {
+                InMemoryUserRepository.this.save(user);
+            }
+        });
     }
 
 
@@ -38,10 +44,10 @@ public class InMemoryUserRepository implements UserRepository {
         log.info("save {}", user);
         if (user.isNew()) {
             user.setId(counter.incrementAndGet());
-            repository.put(user.getId(), user);
-            return user;
         }
-        return repository.computeIfPresent(user.getId(), (id, oldUser) -> user);
+        repository.put(user.getId(), user);
+        return user;
+        // return repository.computeIfPresent(user.getId(), (id, oldUser) -> user);
     }
 
     @Override

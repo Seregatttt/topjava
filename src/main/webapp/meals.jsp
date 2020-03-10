@@ -21,7 +21,14 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
-    <a href="meals?action=create">Add Meal</a>
+    <form action="meals" method="get">
+        <input type="text" name="action" id="search" value="search" hidden>
+        <input type="date" name="startDate" value="${startDate}">
+        <input type="date" name="endDate" value="${endDate}">
+        <input type="time" name="startTime" value="${startTime}">
+        <input type="time" name="endTime" value="${endTime}">
+        <button type="submit">Search</button>
+    </form>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -49,6 +56,7 @@
             </tr>
         </c:forEach>
     </table>
+    <a href="meals?action=create">Add Meal</a>
 </section>
 </body>
 </html>

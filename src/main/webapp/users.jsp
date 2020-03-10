@@ -10,7 +10,8 @@
 <body>
 <h3><a href="index.html">Home</a></h3>
 <hr/>
-<h2>Users </h2>
+<h2>user LogOn as: ${userLogOn}</h2>
+<h2>List All Users: </h2>
 <a href="users?action=create">Add User</a>
 <br><br>
 <table border="1" cellpadding="8" cellspacing="0">
