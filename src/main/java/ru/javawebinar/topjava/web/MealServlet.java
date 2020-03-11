@@ -81,11 +81,10 @@ public class MealServlet extends HttpServlet {
                 String startTime = request.getParameter("startTime");
                 String endTime = request.getParameter("endTime");
 
-                // здесь добавлю filteredByStreams для даты и времени
-
                 request.setAttribute("meals",
-                        MealsUtil.filteredByStreams(
-                                new ArrayList<>(repository.getAll()), LocalTime.MIN, LocalTime.MAX, MealsUtil.DEFAULT_CALORIES_PER_DAY));
+                        MealsUtil.filteredByStreamsDT(
+                                new ArrayList<>(repository.getAll()), startDate, startTime, endDate, endTime,
+                                MealsUtil.DEFAULT_CALORIES_PER_DAY));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "all":
