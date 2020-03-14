@@ -10,7 +10,6 @@ import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
@@ -25,38 +24,30 @@ public class MealService {
         this.repository = repository;
     }
 
-    public Meal create(Meal meal) {
+    public Meal create(int userId, Meal meal) {
         log.info("MealService create {}", meal);
-        return repository.save(meal);
+        return repository.save(userId, meal);
     }
 
-    public void delete(int id) {
-        checkNotFoundWithId(repository.delete(id), id);
+    public void delete(int userId, int id) {
+        checkNotFoundWithId(repository.delete(userId, id), id);
     }
 
-    public Meal get(int id) {
-        return checkNotFoundWithId(repository.get(id), id);
+    public Meal get(int userId, int id) {
+        return checkNotFoundWithId(repository.get(userId, id), id);
     }
 
-    public void update(Meal Meal) {
-        checkNotFoundWithId(repository.save(Meal), Meal.getId());
+    public void update(int userId, Meal Meal) {
+        checkNotFoundWithId(repository.save(userId, Meal), Meal.getId());
     }
 
-    public List<MealTo> getAll() {
-        final List<Meal> meals = repository.getAll();
-        return MealsUtil.getListMealTo(meals, DEFAULT_CALORIES_PER_DAY);
+    public List<MealTo> getAll(int userId) {
+        final List<Meal> meals = repository.getAll(userId);
+        return MealsUtil.filteredByStreams(meals, LocalTime.MIN, LocalTime.MAX, DEFAULT_CALORIES_PER_DAY);
     }
 
-    public List<MealTo> getAllFiltered(String startDate, String startTime, String endDate, String endTime) {
-
-        DateTimeFormatter f1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter f2 = DateTimeFormatter.ofPattern("HH:mm");
-        LocalDate d1 = startDate.equals("") ? LocalDate.MIN : LocalDate.parse(startDate, f1);
-        LocalDate d2 = endDate.equals("") ? LocalDate.MAX : LocalDate.parse(endDate, f1);
-        LocalTime t1 = startTime.equals("") ? LocalTime.MIN : LocalTime.parse(startTime, f2);
-        LocalTime t2 = endTime.equals("") ? LocalTime.MAX : LocalTime.parse(endTime, f2);
-
-        final List<Meal> meals = repository.getAllFiltered(d1, d2, t1, t2);
-        return MealsUtil.getListMealTo(meals, DEFAULT_CALORIES_PER_DAY);
+    public List<MealTo> getAllFiltered(int userId, LocalDate d1, LocalDate d2, LocalTime t1, LocalTime t2) {
+        final List<Meal> meals = repository.getAllFiltered(userId, d1, d2);
+        return MealsUtil.filteredByStreams(meals, t1, t2, DEFAULT_CALORIES_PER_DAY);
     }
 }

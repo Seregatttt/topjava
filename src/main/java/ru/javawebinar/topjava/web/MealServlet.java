@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
@@ -14,22 +13,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
-
     private MealRestController mealRestController;
+    private ConfigurableApplicationContext appCtx;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
-            mealRestController = appCtx.getBean(MealRestController.class);
-            appCtx.registerShutdownHook();
-        }
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        mealRestController = appCtx.getBean(MealRestController.class);
     }
 
     @Override
@@ -73,11 +73,18 @@ public class MealServlet extends HttpServlet {
                 break;
             case "search":
                 log.info("getAllSearch");
-                String startDate = request.getParameter("startDate");
-                String endDate = request.getParameter("endDate");
-                String startTime = request.getParameter("startTime");
-                String endTime = request.getParameter("endTime");
-                request.setAttribute("meals", mealRestController.getAllFiltered(startDate, startTime, endDate, endTime));
+                DateTimeFormatter f1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                DateTimeFormatter f2 = DateTimeFormatter.ofPattern("HH:mm");
+                LocalDate d1 = request.getParameter("startDate").equals("") ? null
+                        : LocalDate.parse(request.getParameter("startDate"), f1);
+                LocalDate d2 = request.getParameter("endDate").equals("") ? null
+                        : LocalDate.parse(request.getParameter("endDate"), f1);
+                LocalTime t1 = request.getParameter("startTime").equals("") ? null
+                        : LocalTime.parse(request.getParameter("startTime"), f2);
+                LocalTime t2 = request.getParameter("endTime").equals("") ? null
+                        : LocalTime.parse(request.getParameter("endTime"), f2);
+
+                request.setAttribute("meals", mealRestController.getAllFiltered(d1, d2, t1, t2));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "all":
@@ -90,8 +97,7 @@ public class MealServlet extends HttpServlet {
     }
 
     public void destroy() {
-        ApplicationContext context = new ClassPathXmlApplicationContext("spring/spring-app.xml");
-        ((ConfigurableApplicationContext) context).close();
+        appCtx.close();
     }
 
     protected static int getId(HttpServletRequest request) {

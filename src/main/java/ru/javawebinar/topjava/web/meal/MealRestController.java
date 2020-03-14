@@ -7,7 +7,10 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -22,33 +25,37 @@ public class MealRestController {
 
     public Meal get(int id) {
         log.info("get {}", id);
-        return service.get(id);
+        return service.get(SecurityUtil.authUserId(), id);
     }
 
     public Meal create(Meal meal) {
         log.info("create {}", meal);
         checkNew(meal);
-        return service.create(meal);
+        return service.create(SecurityUtil.authUserId(), meal);
     }
 
     public void delete(int id) {
         log.info("delete {}", id);
-        service.delete(id);
+        service.delete(SecurityUtil.authUserId(), id);
     }
 
     public void update(Meal meal, int id) {
         log.info("update {} with id={}", meal, id);
         assureIdConsistent(meal, id);
-        service.update(meal);
+        service.update(SecurityUtil.authUserId(), meal);
     }
 
     public List<MealTo> getAll() {
         log.info("getAll");
-        return service.getAll();
+        return service.getAll(SecurityUtil.authUserId());
     }
 
-    public List<MealTo> getAllFiltered(String startDate, String startTime, String endDate, String endTime) {
+    public List<MealTo> getAllFiltered(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
         log.info("getAllFiltered");
-        return service.getAllFiltered(startDate, startTime, endDate, endTime);
+        LocalDate d1 = startDate == null ? LocalDate.MIN : startDate;
+        LocalDate d2 = endDate == null ? LocalDate.MAX : endDate;
+        LocalTime t1 = startTime == null ? LocalTime.MIN : startTime;
+        LocalTime t2 = endTime == null ? LocalTime.MAX : endTime;
+        return service.getAllFiltered(SecurityUtil.authUserId(), d1, d2, t1, t2);
     }
 }
