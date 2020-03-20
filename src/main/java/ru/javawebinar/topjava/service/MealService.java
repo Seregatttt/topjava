@@ -10,6 +10,7 @@ import java.util.List;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.getEndExclusive;
 import static ru.javawebinar.topjava.util.DateTimeUtil.getStartInclusive;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFound;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
@@ -42,6 +43,6 @@ public class MealService {
     }
 
     public Meal create(Meal meal, int userId) {
-        return repository.save(meal, userId);
+        return checkNotFound(repository.save(meal, userId), "userId=" + userId);
     }
 }
