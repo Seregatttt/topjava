@@ -56,7 +56,8 @@ public class JdbcMealRepository implements MealRepository {
                 "  UPDATE meals " +
                         "     SET  date_time=:date_time, description=:description, calories=:calories " +
                         "   WHERE id=:id AND  user_id=:user_id ", map) == 0) {
-            throw new NotFoundException("Not found meal  with id=" + meal.getId() + " for userId=" + userId);
+           // throw new NotFoundException("Not found meal  with id=" + meal.getId() + " for userId=" + userId);
+            return null;
         }
         return meal;
     }
@@ -72,7 +73,7 @@ public class JdbcMealRepository implements MealRepository {
                 " SELECT * " +
                 "   FROM meals " +
                 "  WHERE id=? " +
-                "    AND user_id=?", new CustomerRowMapper(), id, userId);
+                "    AND user_id=?", ROW_MAPPER, id, userId);
         return DataAccessUtils.singleResult(meals);
     }
 
@@ -82,7 +83,7 @@ public class JdbcMealRepository implements MealRepository {
                 " SELECT * " +
                 "   FROM meals t" +
                 "  WHERE user_id =?" +
-                "  ORDER BY t.date_time DESC ", new CustomerRowMapper(), userId);
+                "  ORDER BY t.date_time DESC ", ROW_MAPPER, userId);
     }
 
     @Override
@@ -90,18 +91,6 @@ public class JdbcMealRepository implements MealRepository {
         return jdbcTemplate.query(" " +
                 " SELECT * FROM meals t " +
                 "  WHERE t.date_time >= ? AND  t.date_time < ?" +
-                "  ORDER BY t.date_time DESC ", new CustomerRowMapper(), Timestamp.valueOf(startDate), Timestamp.valueOf(endDate));
-    }
-
-    public class CustomerRowMapper implements RowMapper<Meal> {
-        @Override
-        public Meal mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Meal meal = new Meal();
-            meal.setId(rs.getInt("id"));
-            meal.setDateTime(rs.getTimestamp("date_time").toLocalDateTime());
-            meal.setDescription(rs.getString("description"));
-            meal.setCalories(rs.getInt("calories"));
-            return meal;
-        }
+                "  ORDER BY t.date_time DESC ", ROW_MAPPER, Timestamp.valueOf(startDate), Timestamp.valueOf(endDate));
     }
 }

@@ -25,7 +25,7 @@ public class MealTestData {
     }
 
     public static void assertMatch(Meal actual, Meal expected) {
-        assertThat(actual).isEqualToIgnoringGivenFields(expected, "skip_field1", "skip_field2");
+        assertThat(actual).isEqualTo(expected);
     }
 
     public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
@@ -33,6 +33,6 @@ public class MealTestData {
     }
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
-        assertThat(actual).usingElementComparatorIgnoringFields("skip_field1", "skip_field2").isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 }

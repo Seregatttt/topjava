@@ -30,7 +30,7 @@ public class MealServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         springContext = new ClassPathXmlApplicationContext(
-                "spring/spring-app.xml", "spring/spring-app-1.xml", "spring/spring-db.xml");
+                "spring/spring-app.xml", "spring/spring-db.xml");
         mealController = springContext.getBean(MealRestController.class);
     }
 
