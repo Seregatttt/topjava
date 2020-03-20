@@ -12,16 +12,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
+        "classpath:spring/spring-app-1.xml",
         "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
@@ -40,19 +40,26 @@ public class MealServiceTest {
 
     @Test
     public void create() throws Exception {
-        Meal newMeal = getNew();
+        Meal newMeal = getNewMeal();
         Meal created = service.create(newMeal, ADMIN_ID);
         Integer newId = created.getId();
         newMeal.setId(newId);
-        assertEquals(service.get(newId, ADMIN_ID), newMeal);
+        assertMatch(service.get(newId, ADMIN_ID), newMeal);
     }
 
     @Test
     public void update() throws Exception {
-        Meal meal = service.get(1, USER_ID);
+        Meal meal = service.get(100002, USER_ID);
         meal.setDescription("update discription");
         service.update(meal, USER_ID);
-        assertEquals(service.get(1, USER_ID), meal);
+        assertMatch(service.get(100002, USER_ID), meal);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void updateNotFound() throws Exception {
+        Meal meal = service.get(100002, USER_ID);
+        meal.setDescription("update discription");
+        service.update(meal, 999);
     }
 
     @Test(expected = NotFoundException.class)
@@ -68,9 +75,8 @@ public class MealServiceTest {
 
     @Test
     public void get() throws Exception {
-        Meal meal = service.get(3, ADMIN_ID);
-        log.debug("get() = " + meal);
-        assertEquals(meal, MEAL_3);
+        Meal meal = service.get(100004, ADMIN_ID);
+        assertMatch(meal, MEAL_3);
     }
 
     @Test(expected = NotFoundException.class)
@@ -86,7 +92,6 @@ public class MealServiceTest {
     @Test
     public void getAll() throws Exception {
         List<Meal> all = service.getAll(USER_ID);
-        assertEquals(2, all.size());
-        assertEquals(Arrays.asList(MEAL_2, MEAL_1), all);
+        assertMatch(all, MEAL_2, MEAL_1);
     }
 }

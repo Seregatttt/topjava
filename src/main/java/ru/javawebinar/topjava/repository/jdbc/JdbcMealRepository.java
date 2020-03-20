@@ -4,13 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,9 +54,9 @@ public class JdbcMealRepository implements MealRepository {
             meal.setId(newKey.intValue());
         } else if (namedParameterJdbcTemplate.update(
                 "  UPDATE meals " +
-                        "     SET user_id=:user_id, date_time=:date_time, description=:description, calories=:calories " +
-                        "   WHERE id=:id", map) == 0) {
-            return null;
+                        "     SET  date_time=:date_time, description=:description, calories=:calories " +
+                        "   WHERE id=:id AND  user_id=:user_id ", map) == 0) {
+            throw new NotFoundException("Not found meal  with id=" + meal.getId() + " for userId=" + userId);
         }
         return meal;
     }
@@ -65,27 +69,39 @@ public class JdbcMealRepository implements MealRepository {
     @Override
     public Meal get(int id, int userId) {
         List<Meal> meals = jdbcTemplate.query(" " +
-                " SELECT id, user_id, date_time AS dateTime, description, calories" +
+                " SELECT * " +
                 "   FROM meals " +
                 "  WHERE id=? " +
-                "    AND user_id=?", ROW_MAPPER, id, userId);
+                "    AND user_id=?", new CustomerRowMapper(), id, userId);
         return DataAccessUtils.singleResult(meals);
     }
 
     @Override
     public List<Meal> getAll(int userId) {
         return jdbcTemplate.query(" " +
-                " SELECT id, user_id, date_time AS dateTime, description, calories " +
+                " SELECT * " +
                 "   FROM meals t" +
                 "  WHERE user_id =?" +
-                "  ORDER BY t.date_time DESC ", ROW_MAPPER, userId);
+                "  ORDER BY t.date_time DESC ", new CustomerRowMapper(), userId);
     }
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         return jdbcTemplate.query(" " +
-                " SELECT id, user_id, date_time AS dateTime, description, calories  FROM meals t " +
+                " SELECT * FROM meals t " +
                 "  WHERE t.date_time >= ? AND  t.date_time < ?" +
-                "  ORDER BY t.date_time DESC ", ROW_MAPPER, Timestamp.valueOf(startDate), Timestamp.valueOf(endDate));
+                "  ORDER BY t.date_time DESC ", new CustomerRowMapper(), Timestamp.valueOf(startDate), Timestamp.valueOf(endDate));
+    }
+
+    public class CustomerRowMapper implements RowMapper<Meal> {
+        @Override
+        public Meal mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Meal meal = new Meal();
+            meal.setId(rs.getInt("id"));
+            meal.setDateTime(rs.getTimestamp("date_time").toLocalDateTime());
+            meal.setDescription(rs.getString("description"));
+            meal.setCalories(rs.getInt("calories"));
+            return meal;
+        }
     }
 }
