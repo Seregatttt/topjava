@@ -43,6 +43,6 @@ public class MealService {
     }
 
     public Meal create(Meal meal, int userId) {
-        return repository.save(meal, userId);
+        return checkNotFound(repository.save(meal, userId), "userId=" + userId);
     }
 }
