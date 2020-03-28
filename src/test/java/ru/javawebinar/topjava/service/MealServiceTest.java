@@ -2,7 +2,7 @@ package ru.javawebinar.topjava.service;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TestWatcher;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -11,12 +11,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.javawebinar.topjava.TestMatcher;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -30,43 +34,50 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-    private static final Logger log = getLogger(MealServiceTest.class);
-    private static long timeStartTest;
-    static String nameTestClass;
-
-    long timeStartBlock;
+    private static final List<String> executeInfo = new ArrayList<>();
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
-    @Rule
-    public TestWatcher watcher = new TestWatcher() {
+    private static final Logger log = getLogger(MealServiceTest.class);
 
+    private static void logInfo(Description description, String status, long nanos) {
+        String testName = description.getMethodName();
+        String info = String.format("\nTest %-30s %20s spent %d milliseconds",
+                testName, status, TimeUnit.NANOSECONDS.toMillis(nanos));
+        executeInfo.add(info);
+        log.info(info);
+    }
+
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
         @Override
-        protected void starting(Description description) {
-            nameTestClass = description.getTestClass().getName();
-            log.debug("starting test " + description.getMethodName());
-            timeStartBlock = System.currentTimeMillis();
+        protected void succeeded(long nanos, Description description) {
+            logInfo(description, (char) 27 + "[31msucceeded" + (char) 27 + "[0m", nanos);
         }
 
         @Override
-        protected void finished(Description description) {
-            long delta = System.currentTimeMillis() - timeStartBlock;
-            log.debug("finished execute " + description.getMethodName() + " for =" + delta + "  millisecund");
+        protected void failed(long nanos, Throwable e, Description description) {
+            logInfo(description, (char) 27 + "[31mfailed" + (char) 27 + "[0m", nanos);
+        }
+
+        @Override
+        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
+            logInfo(description, (char) 27 + "[34mskipped" + (char) 27 + "[0m", nanos);
+        }
+
+        @Override
+        protected void finished(long nanos, Description description) {
+            logInfo(description, (char) 27 + "[32mfinished" + (char) 27 + "[0m", nanos);
         }
     };
 
-    @BeforeClass
-    public static void before() {
-        log.debug("before");
-        timeStartTest = System.currentTimeMillis();
-    }
-
     @AfterClass
     public static void after() {
-        log.debug("after");
-        long delta = System.currentTimeMillis() - timeStartTest;
-        log.debug("finished all test " + nameTestClass + " execute for =" + delta + " millisecund");
+        log.info((char) 27 + "[36m\n---------------start test--------------------" + (char) 27 + "[0m");
+        log.info(executeInfo.toString());
+        log.info((char) 27 + "[36m\n---------------end   test--------------------" + (char) 27 + "[0m");
+
     }
 
     @Autowired
@@ -96,15 +107,15 @@ public class MealServiceTest {
     public void create() throws Exception {
         Meal newMeal = getCreated();
         Meal created = service.create(newMeal, USER_ID);
-        Integer newId = created.getId();
-        newMeal.setId(newId);
+        newMeal.setId(created.getId());
         MEAL_MATCHER.assertMatch(created, newMeal);
-        MEAL_MATCHER.assertMatch(service.get(newId, USER_ID), newMeal);
+        MEAL_MATCHER.assertMatch(service.get(created.getId(), USER_ID), newMeal);
     }
 
     @Test
     public void get() throws Exception {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
+        TestMatcher.of("user");
         MEAL_MATCHER.assertMatch(actual, ADMIN_MEAL1);
     }
 

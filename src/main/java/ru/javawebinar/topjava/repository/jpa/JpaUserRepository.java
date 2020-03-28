@@ -14,15 +14,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class JpaUserRepository implements UserRepository {
 
-/*
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    private Session openSession() {
-        return sessionFactory.getCurrentSession();
-    }
-*/
-
     @PersistenceContext
     private EntityManager em;
 
@@ -48,12 +39,6 @@ public class JpaUserRepository implements UserRepository {
     @Transactional
     public boolean delete(int id) {
 
-/*      User ref = em.getReference(User.class, id);
-        em.remove(ref);
-
-        Query query = em.createQuery("DELETE FROM User u WHERE u.id=:id");
-        return query.setParameter("id", id).executeUpdate() != 0;
-*/
         return em.createNamedQuery(User.DELETE)
                 .setParameter("id", id)
                 .executeUpdate() != 0;
@@ -72,7 +57,4 @@ public class JpaUserRepository implements UserRepository {
         return em.createNamedQuery(User.ALL_SORTED, User.class).getResultList();
     }
 
-    public User getUser(int id) {
-        return em.find(User.class, id);
-    }
 }
