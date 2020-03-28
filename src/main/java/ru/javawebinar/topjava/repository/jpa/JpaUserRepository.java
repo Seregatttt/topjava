@@ -29,6 +29,8 @@ public class JpaUserRepository implements UserRepository {
     @Override
     @Transactional
     public User save(User user) {
+
+
         if (user.isNew()) {
             em.persist(user);
             return user;
@@ -68,5 +70,9 @@ public class JpaUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         return em.createNamedQuery(User.ALL_SORTED, User.class).getResultList();
+    }
+
+    public User getUser(int id) {
+        return em.find(User.class, id);
     }
 }
