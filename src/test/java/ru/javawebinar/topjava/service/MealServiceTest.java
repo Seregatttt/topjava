@@ -51,20 +51,6 @@ public class MealServiceTest {
 
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
-        @Override
-        protected void succeeded(long nanos, Description description) {
-            logInfo(description, (char) 27 + "[31msucceeded" + (char) 27 + "[0m", nanos);
-        }
-
-        @Override
-        protected void failed(long nanos, Throwable e, Description description) {
-            logInfo(description, (char) 27 + "[31mfailed" + (char) 27 + "[0m", nanos);
-        }
-
-        @Override
-        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
-            logInfo(description, (char) 27 + "[34mskipped" + (char) 27 + "[0m", nanos);
-        }
 
         @Override
         protected void finished(long nanos, Description description) {
@@ -74,9 +60,9 @@ public class MealServiceTest {
 
     @AfterClass
     public static void after() {
-        log.info((char) 27 + "[36m\n---------------start test--------------------" + (char) 27 + "[0m");
+        log.info((char) 27 + "[36m\n-----------------------------------" + (char) 27 + "[0m");
         log.info(executeInfo.toString());
-        log.info((char) 27 + "[36m\n---------------end   test--------------------" + (char) 27 + "[0m");
+        log.info((char) 27 + "[36m\n-----------------------------------" + (char) 27 + "[0m");
 
     }
 
@@ -115,7 +101,6 @@ public class MealServiceTest {
     @Test
     public void get() throws Exception {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
-        TestMatcher.of("user");
         MEAL_MATCHER.assertMatch(actual, ADMIN_MEAL1);
     }
 
