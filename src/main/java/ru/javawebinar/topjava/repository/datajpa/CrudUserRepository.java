@@ -16,4 +16,9 @@ public interface CrudUserRepository extends JpaRepository<User, Integer> {
     int delete(@Param("id") int id);
 
     User getByEmail(String email);
+
+    // https://www.logicbig.com/tutorials/java-ee-tutorial/jpa/fetch-join.html  > LEFT JOIN FETCH
+    @Transactional
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.meals WHERE u.id = :id ")
+    User getUserWithMeals(@Param("id") int id);
 }

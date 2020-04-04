@@ -18,4 +18,9 @@ public interface UserRepository {
     User getByEmail(String email);
 
     List<User> getAll();
+
+    //https://javarush.ru/groups/posts/1984-defoltnihe-metodih-v-interfeysakh
+    default User getUserWithMeals(int id) {
+        return null;
+    }
 }
