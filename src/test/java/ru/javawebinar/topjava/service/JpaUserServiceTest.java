@@ -1,7 +1,8 @@
 package ru.javawebinar.topjava.service;
 
 import org.springframework.test.context.ActiveProfiles;
+import ru.javawebinar.topjava.Profiles;
 
-@ActiveProfiles({"jpa"})
+@ActiveProfiles(Profiles.REPOSITORY_IMPLEMENTATION)
 public class JpaUserServiceTest extends AbstractUserServiceTest {
 }

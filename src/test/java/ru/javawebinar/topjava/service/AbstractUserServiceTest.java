@@ -15,7 +15,7 @@ import java.util.List;
 
 import static ru.javawebinar.topjava.UserTestData.*;
 
-public class AbstractUserServiceTest extends AbstractServiceTest {
+public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Autowired
     private UserService service;
@@ -40,9 +40,9 @@ public class AbstractUserServiceTest extends AbstractServiceTest {
         USER_MATCHER.assertMatch(service.get(newId), newUser);
     }
 
-    @Test(expected = DataAccessException.class)
-    public void duplicateMailCreate() throws Exception {
-        service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.ROLE_USER));
+    @Test
+    public void duplicateMailCreate() {
+        Assert.assertThrows(DataAccessException.class, () -> service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.ROLE_USER)));
     }
 
     public void delete() throws Exception {
@@ -50,9 +50,9 @@ public class AbstractUserServiceTest extends AbstractServiceTest {
         Assert.assertNull(repository.get(USER_ID));
     }
 
-    @Test(expected = NotFoundException.class)
-    public void deletedNotFound() throws Exception {
-        service.delete(1);
+    @Test
+    public void deletedNotFound() {
+        Assert.assertThrows(NotFoundException.class, () -> service.delete(1));
     }
 
     @Test
@@ -61,9 +61,9 @@ public class AbstractUserServiceTest extends AbstractServiceTest {
         USER_MATCHER.assertMatch(user, USER);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void getNotFound() throws Exception {
-        service.get(1);
+    @Test
+    public void getNotFound() {
+        Assert.assertThrows(NotFoundException.class, () -> service.get(1));
     }
 
     @Test
