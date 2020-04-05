@@ -21,6 +21,6 @@ public interface UserRepository {
 
     //https://javarush.ru/groups/posts/1984-defoltnihe-metodih-v-interfeysakh
     default User getUserWithMeals(int id) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }
