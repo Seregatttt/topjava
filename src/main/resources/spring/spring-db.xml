@@ -67,6 +67,8 @@
             <constructor-arg ref="jdbcTemplate"/>
         </bean>
 
+
+
         <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
               p:dataSource-ref="dataSource"
               p:packagesToScan="ru.javawebinar.**.model">
@@ -79,19 +81,23 @@
             </property>
         </bean>
 
-        <tx:annotation-driven/>
+        <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager" />
 
-        <!-- Transaction manager for a single JPA EntityManagerFactory (alternative to JTA) -->
-        <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
-              p:entityManagerFactory-ref="entityManagerFactory"/>
+        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+            <property name="dataSource"  ref="dataSource" />
+        </bean>
         <bean class="ru.javawebinar.topjava.repository.JpaUtil"/>
-    </beans>
+        <!-- Transaction manager for a single JPA EntityManagerFactory (alternative to JTA) -->
+        <!--  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
+                p:entityManagerFactory-ref="entityManagerFactory"/>
+          <bean class="ru.javawebinar.topjava.repository.JpaUtil"/> -->
+      </beans>
 
-    <beans profile="jpa,datajpa">
-        <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-              p:dataSource-ref="dataSource"
-              p:packagesToScan="ru.javawebinar.**.model">
-            <!--p:persistenceUnitName="persistenceUnit">-->
+      <beans profile="jpa,datajpa">
+          <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+                p:dataSource-ref="dataSource"
+                p:packagesToScan="ru.javawebinar.**.model">
+              <!--p:persistenceUnitName="persistenceUnit">-->
 
             <property name="jpaPropertyMap">
                 <map>

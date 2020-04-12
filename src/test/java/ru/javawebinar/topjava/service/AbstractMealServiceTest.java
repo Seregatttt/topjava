@@ -5,6 +5,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.Role;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -46,6 +48,7 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest {
     @Test
     public void create() throws Exception {
         Meal newMeal = getNew();
+        newMeal.setUser(new User(USER_ID, "User", "user@yandex.ru", "password", Role.ROLE_USER));
         Meal created = service.create(newMeal, USER_ID);
         Integer newId = created.getId();
         newMeal.setId(newId);
@@ -74,12 +77,15 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest {
     @Test
     public void update() throws Exception {
         Meal updated = getUpdated();
+        updated.setUser(new User(USER_ID, "User", "user@yandex.ru", "password", Role.ROLE_USER));
         service.update(updated, USER_ID);
         MEAL_MATCHER.assertMatch(service.get(MEAL1_ID, USER_ID), updated);
     }
 
     @Test
     public void updateNotFound() throws Exception {
+        Meal meal = MEAL1;
+        meal.setUser(new User(USER_ID, "User", "user@yandex.ru", "password", Role.ROLE_USER));
         NotFoundException ex = Assert.assertThrows(NotFoundException.class,
                 () -> service.update(MEAL1, ADMIN_ID));
         Assert.assertEquals("Not found entity with id=" + MEAL1_ID, ex.getMessage());
