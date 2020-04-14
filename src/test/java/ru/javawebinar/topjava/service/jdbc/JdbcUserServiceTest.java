@@ -9,38 +9,40 @@ import ru.javawebinar.topjava.service.AbstractUserServiceTest;
 import ru.javawebinar.topjava.util.JdbcBeanValidateApi;
 import ru.javawebinar.topjava.util.exception.ValidationException;
 
+import javax.validation.ConstraintViolationException;
+
 import static ru.javawebinar.topjava.Profiles.JDBC;
 
 @ActiveProfiles(JDBC)
 public class JdbcUserServiceTest extends AbstractUserServiceTest {
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = ConstraintViolationException.class)
     public void createNotBlankNameUser() {
         User created = service.create(new User(null, "  ", "mail@yandex.ru", "password", Role.ROLE_USER));
        // JdbcBeanValidateApi.validate(created);
-       // Assert.assertThrows(ValidationException.class, () -> JdbcBeanValidateApi.validate(created));
+      //  Assert.assertThrows("Error in JdbcBeanValidateApi",ConstraintViolationException.class, () -> JdbcBeanValidateApi.validate(created));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = ConstraintViolationException.class)
     public void createNotBlankEmailUser() {
         User created = service.create(new User(null, "User", "  ", "password", Role.ROLE_USER));
        // Assert.assertThrows(ValidationException.class, () -> JdbcBeanValidateApi.validate(created));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = ConstraintViolationException.class)
     public void createNotFormatEmailUser() {
         User created = service.create(new User(null, "User", "xxx", "password", Role.ROLE_USER));
         //Assert.assertThrows(ValidationException.class, () -> JdbcBeanValidateApi.validate(created));
     }
 
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = ConstraintViolationException.class)
     public void createNotBlankPassUser() {
         User created = service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.ROLE_USER));
        // Assert.assertThrows(ValidationException.class, () -> JdbcBeanValidateApi.validate(created));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = ConstraintViolationException.class)
     public void createNotRangePassUser() {
         User created = service.create(new User(null, "User", "mail@yandex.ru", "555", Role.ROLE_USER));
        // Assert.assertThrows(ValidationException.class, () -> JdbcBeanValidateApi.validate(created));

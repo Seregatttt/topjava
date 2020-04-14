@@ -39,7 +39,7 @@ public class JdbcMealRepository implements MealRepository {
     }
 
     @Override
-    @Transactional(isolation= Isolation.READ_COMMITTED)
+    @Transactional
     public Meal save(Meal meal, int userId) {
 
         JdbcBeanValidateApi.validate(meal);

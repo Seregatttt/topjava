@@ -40,7 +40,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public User save(User user) {
 
         JdbcBeanValidateApi.validate(user);

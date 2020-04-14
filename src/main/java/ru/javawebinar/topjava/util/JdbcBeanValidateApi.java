@@ -1,25 +1,19 @@
 package ru.javawebinar.topjava.util;
 
-import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.util.exception.*;
+import ru.javawebinar.topjava.util.exception.ValidationException;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import javax.validation.*;
 import java.util.Set;
 
 public class JdbcBeanValidateApi {
+    static ValidatorFactory vf = Validation.buildDefaultValidatorFactory();
+    static Validator validator = vf.getValidator();
 
-    public static void validate(Object o) {
-
-        ValidatorFactory vf = Validation.buildDefaultValidatorFactory();
-        Validator validator = vf.getValidator();
-
-        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(o);
+    public static <T> void validate(T o) {
+        Set<ConstraintViolation<T>> constraintViolations = validator.validate(o);
 
         if (constraintViolations.size() > 0) {
-            throw new ValidationException(constraintViolations);
+            throw new ConstraintViolationException("Error in JdbcBeanValidateApi",constraintViolations);
         }
     }
 }

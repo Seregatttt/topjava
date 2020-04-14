@@ -18,6 +18,7 @@
         <jdbc:script encoding="utf-8" location="classpath:db/populateDB.sql"/>
     </jdbc:initialize-database>
 
+    <tx:annotation-driven/>
     <!-- Choose profile from (hsqldb/ postgres) and (jdbc/ datajpa/ jpa) -->
 
     <beans profile="hsqldb">
@@ -67,32 +68,13 @@
             <constructor-arg ref="jdbcTemplate"/>
         </bean>
 
-
-
-        <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-              p:dataSource-ref="dataSource"
-              p:packagesToScan="ru.javawebinar.**.model">
-            <!--p:persistenceUnitName="persistenceUnit">-->
-
-
-            <property name="jpaVendorAdapter">
-                <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:showSql="${jpa.showSql}">
-                </bean>
-            </property>
-        </bean>
-
         <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager" />
 
         <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
             <property name="dataSource"  ref="dataSource" />
         </bean>
-        <bean class="ru.javawebinar.topjava.repository.JpaUtil"/>
-        <!-- Transaction manager for a single JPA EntityManagerFactory (alternative to JTA) -->
-        <!--  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
-                p:entityManagerFactory-ref="entityManagerFactory"/>
-          <bean class="ru.javawebinar.topjava.repository.JpaUtil"/> -->
-      </beans>
 
+      </beans>
       <beans profile="jpa,datajpa">
           <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
                 p:dataSource-ref="dataSource"
@@ -125,14 +107,10 @@
                 </bean>
             </property>
         </bean>
-
-        <tx:annotation-driven/>
-
         <!-- Transaction manager for a single JPA EntityManagerFactory (alternative to JTA) -->
         <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
               p:entityManagerFactory-ref="entityManagerFactory"/>
-
-        <bean class="ru.javawebinar.topjava.repository.JpaUtil"/>
+         <bean class="ru.javawebinar.topjava.repository.JpaUtil"/>
     </beans>
 
     <beans profile="jpa">
