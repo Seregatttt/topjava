@@ -1,6 +1,8 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
@@ -9,6 +11,7 @@ import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.JpaUtil;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.service.jdbc.JdbcUserServiceTest;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.ConstraintViolationException;
@@ -20,26 +23,30 @@ import static ru.javawebinar.topjava.Profiles.JDBC;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 public abstract class AbstractUserServiceTest extends AbstractServiceTest {
+    private static final Logger log = LoggerFactory.getLogger(AbstractUserServiceTest.class);
 
     @Autowired
     protected UserService service;
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    private UserRepository repository;
+    protected UserRepository repository;
 
     @Autowired
-    private CacheManager cacheManager;
+    protected CacheManager cacheManager;
 
     @Autowired(required = false)
     protected JpaUtil jpaUtil;
 
     @Before
     public void setUp() throws Exception {
+        log.warn("start setUp   ");
         cacheManager.getCache("users").clear();
         if (!getActProfiles(JDBC) ){
             jpaUtil.clear2ndLevelHibernateCache();
         }
-       // cacheManager = new NoOpCacheManager();
+        log.warn("start NoOpCacheManager   ");
+        cacheManager = new NoOpCacheManager();
+        log.warn("end NoOpCacheManager   ");
     }
 
     @Test

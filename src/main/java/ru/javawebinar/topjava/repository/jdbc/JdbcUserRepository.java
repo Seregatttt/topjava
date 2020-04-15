@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.repository.jdbc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -24,6 +26,7 @@ import java.util.Map;
 @Repository
 @Transactional(readOnly = true)
 public class JdbcUserRepository implements UserRepository {
+    private static final Logger log = LoggerFactory.getLogger(JdbcUserRepository.class);
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -71,8 +74,9 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public boolean delete(int id) {
+        log.warn("start delete id = {} ",id);
         return jdbcTemplate.update("DELETE FROM users WHERE id=?", id) != 0;
     }
 
@@ -96,6 +100,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public List<User> getAll() {
+        log.warn("start getAll ");
         String sql = " " +
                 " SELECT * FROM users u " +
                 " left join user_roles ur on u.id = ur.user_id" +
