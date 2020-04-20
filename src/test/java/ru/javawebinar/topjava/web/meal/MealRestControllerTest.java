@@ -13,7 +13,7 @@ import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -80,11 +80,17 @@ public class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(MEALTO_MATCHER.contentJson(MealsUtil.getTos(MEALS, SecurityUtil.authUserCaloriesPerDay())));
     }
 
+
     @Test
     void getBetween() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/getbetween?ldt1=2020-01-30T06:00&ldt2=2020-01-31T12:00"))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/getbetween?ld1=2020-01-30&lt1=06:00&ld2=2020-01-31&lt2=12:00"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEALTO_MATCHER.contentJson(MealsUtil.getTos(List.of(MEAL5, MEAL1), SecurityUtil.authUserCaloriesPerDay())));
+                .andExpect(MEALTO_MATCHER.contentJson(
+                        MealsUtil.getTos(MEALS, SecurityUtil.authUserCaloriesPerDay())
+                                .stream()
+                                .filter(x -> (x.getId() == 100002 || x.getId() == 100006))
+                                .collect(Collectors.toList())
+                        )
+                );
     }
 }

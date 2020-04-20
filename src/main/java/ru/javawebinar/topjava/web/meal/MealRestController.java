@@ -2,17 +2,18 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -57,11 +58,15 @@ public class MealRestController extends AbstractMealController {
         return super.getAll();
     }
 
+    @Override
     @GetMapping("/getbetween")
-    public List<MealTo> getBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ldt1,
-                                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ldt2) {
-        log.warn("ldt1={} ldt2={}", ldt1, ldt2);
-        List<MealTo> list = super.getBetween(ldt1.toLocalDate(), ldt1.toLocalTime(), ldt2.toLocalDate(), ldt2.toLocalTime());
+    public List<MealTo> getBetween(
+            @RequestParam @Nullable LocalDate ld1,
+            @RequestParam @Nullable LocalTime lt1,
+            @RequestParam @Nullable LocalDate ld2,
+            @RequestParam @Nullable LocalTime lt2) {
+        log.warn("ldt1={} lt1={} ld2={} lt2={}", ld1, lt1, ld2, lt2);
+        List<MealTo> list = super.getBetween(ld1, lt1, ld2, lt2);
         log.warn("list={}", list);
         return list;
     }
