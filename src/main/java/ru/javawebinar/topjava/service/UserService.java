@@ -41,12 +41,12 @@ public class UserService {
         return checkNotFound(repository.getByEmail(email), "email=" + email);
     }
 
-    @Cacheable("users")
+    //@Cacheable("users")
     public List<User> getAll() {
         return repository.getAll();
     }
 
-    @CacheEvict(value = "users", allEntries = true)
+    // @CacheEvict(value = "users", allEntries = true)
     public void update(User user) {
         Assert.notNull(user, "user must not be null");
         checkNotFoundWithId(repository.save(user), user.id());
@@ -54,5 +54,12 @@ public class UserService {
 
     public User getWithMeals(int id) {
         return checkNotFoundWithId(repository.getWithMeals(id), id);
+    }
+
+    public void chahgeEnabled(int id) {
+        User user = repository.get(id);
+        boolean invert = !user.isEnabled();
+        user.setEnabled(invert);
+        repository.save(user);
     }
 }

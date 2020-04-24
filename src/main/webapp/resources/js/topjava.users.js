@@ -39,4 +39,26 @@ $(function () {
             })
         }
     );
+
+
+
 });
+
+function update() {
+    $.get(context.ajaxUrl, function (data) {
+        context.datatableApi.clear().rows.add(data).draw();
+    });
+}
+
+function clickCheckBox(userId) {
+  //  alert("clickCheckBox userId= "+userId);
+        $.ajax({
+            url: context.ajaxUrl + "changeEnabled/"+userId,
+            type: "PUT"
+        }).done(function () {
+            updateTable();
+            successNoty("chahgeEnabled ok!");
+        });
+
+
+}

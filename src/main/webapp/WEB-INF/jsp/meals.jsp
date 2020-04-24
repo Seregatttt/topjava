@@ -14,26 +14,33 @@
     <div class="container">
         <h3 class="text-center"><spring:message code="meal.title"/></h3>
 
-
-        <form method="get" action="meals/filter">
+        <form id="filterForm">
             <dl>
                 <dt><spring:message code="meal.startDate"/>:</dt>
-                <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
+                <dd><input type="date" id="startDate" name="startDate" value="${param.startDate}"></dd>
             </dl>
             <dl>
                 <dt><spring:message code="meal.endDate"/>:</dt>
-                <dd><input type="date" name="endDate" value="${param.endDate}"></dd>
+                <dd><input type="date" id="endDate" name="endDate" value="${param.endDate}"></dd>
             </dl>
             <dl>
                 <dt><spring:message code="meal.startTime"/>:</dt>
-                <dd><input type="time" name="startTime" value="${param.startTime}"></dd>
+                <dd><input type="time" id="startTime" name="startTime" value="${param.startTime}"></dd>
             </dl>
             <dl>
                 <dt><spring:message code="meal.endTime"/>:</dt>
-                <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
+                <dd><input type="time" id="endTime" name="endTime" value="${param.endTime}"></dd>
             </dl>
-            <button type="submit"><spring:message code="meal.filter"/></button>
+            <button class="btn btn-primary" onclick="filter()">
+                <span class="fa fa-filter"></span>
+                <spring:message code="meal.filter"/>
+            </button>
+            <button class="btn btn-primary" onclick="clearFilter()">
+                <span class="fa fa-free-code-camp"></span>
+                <spring:message code="meal.clearFilter"/>
+            </button>
         </form>
+
         <button class="btn btn-primary" onclick="add()">
             <span class="fa fa-plus"></span>
             <spring:message code="meal.add"/>
@@ -62,13 +69,13 @@
                     <td><i class="fas fa-virus-slash"></i>
                             <%-- <a href="meals/update?id=${meal.id}"><spring:message code="common.update"/></a>--%>
                         <button class="btn btn-primary">
-                            <span class="fa fa-spinner fa-spin"></span>
+                            <span class="fa fa-refresh fa-spin"></span>
                             <spring:message code="common.update"/>
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-primary" onclick="deleteRow(${meal.id})">
-                            <span class="fa fa-minus"></span>
+                            <span class="fa fa-trash"></span>
                             <spring:message code="common.delete"/>
                         </button>
                     </td>
@@ -88,12 +95,10 @@
             <div class="modal-body">
                 <form id="detailsForm">
                     <%--    template   modal-body          --%>
-                    <jsp:useBean id="now" class="java.util.Date" scope="page"/>
                     <input type="hidden" id="id" name="id">
                     <div class="form-group">
                         <label for="dateTime" class="col-form-label"><spring:message code="meal.dateTime"/></label>
                         <input type="datetime-local" class="form-control" id="dateTime" name="dateTime"
-                               value="${now}"
                                placeholder="<spring:message code="meal.dateTime"/>">
                     </div>
                     <div class="form-group">
@@ -123,8 +128,6 @@
         </div>
     </div>
 </div>
-
-
 <jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>
