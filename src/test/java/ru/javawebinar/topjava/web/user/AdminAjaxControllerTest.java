@@ -20,7 +20,7 @@ class AdminAjaxControllerTest extends AbstractControllerTest {
 
     @Test
     void changeEnabled() throws Exception {
-        perform(MockMvcRequestBuilders.put(REST_URL + "changeEnabled/" + USER_ID + "/false"))
+        perform(MockMvcRequestBuilders.get(REST_URL + "changeEnabled/" + USER_ID + "/true"))
                 .andDo(print())
                 .andExpect(status().isNoContent());
         User userFromDB = userService.get(USER_ID);
