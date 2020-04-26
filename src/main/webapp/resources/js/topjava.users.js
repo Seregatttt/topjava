@@ -41,24 +41,20 @@ $(function () {
     );
 
 
-
 });
 
-function update() {
-    $.get(context.ajaxUrl, function (data) {
-        context.datatableApi.clear().rows.add(data).draw();
+function clickCheckBox(userId, isEnabled) {
+    var checked = $("#chk"+userId).is(':checked');
+    $.ajax({
+        url: context.ajaxUrl + "changeEnabled/" + userId + "/" + isEnabled,
+        type: "GET"
+    }).done(function () {
+        //updateTable();
+        if (checked) {
+            $("#chk"+userId).attr("checked", false);
+        } else {
+            $("#chk"+userId).attr("checked", true);
+        };
+        successNoty("done");
     });
-}
-
-function clickCheckBox(userId) {
-  //  alert("clickCheckBox userId= "+userId);
-        $.ajax({
-            url: context.ajaxUrl + "changeEnabled/"+userId,
-            type: "PUT"
-        }).done(function () {
-            updateTable();
-            successNoty("chahgeEnabled ok!");
-        });
-
-
 }

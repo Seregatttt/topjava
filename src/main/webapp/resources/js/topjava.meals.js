@@ -39,27 +39,22 @@ $(function () {
     var t2 = document.getElementById("startDate").value;
     var t3 = document.getElementById("startTime").value;
     var t4 = document.getElementById("endTime").value;
-    if (!((t1 === '') && (t2 === '') && (t3 === '') && (t4 === ''))) {
+    if ((t1 != "") || (t2 != "") || (t3 != "") || (t4 != "")) {
         filter();
     }
 
 
 });
 
-function updateTable() {
-    filter();
-}
-
 function filter() {
-    var data2 = $('#filterForm').serialize();
-    //  data1 = {startDate: '2020-01-30', startTime: '07:00', endDate: '2020-01-31', endTime: '12:00'}
     $.ajax({
         type: "GET",
         url: context.ajaxUrl + "filter",
-        data: data2
+        data: $('#filterForm').serialize()
     }).done(function (data) {
-        context.datatableApi.clear().rows.add(data).draw();
-        //  alert("done");
+       // alert("done" );
+        update(data);
+        successNoty("done");
     }).fail(function (jqXHR, exception) {
         // Our error logic here
         var msg = '';
@@ -80,9 +75,7 @@ function filter() {
         }
         alert("msg=" + msg);
     })
-        .always(function () {
-            //  alert("complete");
-        });
+     ;
 }
 
 function clearFilter() {

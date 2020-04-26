@@ -35,7 +35,11 @@ function deleteRow(id) {
 }
 
 function updateTable() {
-    update();
+    $.get(context.ajaxUrl, update);
+}
+
+function  update(data)  {
+    context.datatableApi.clear().rows.add(data).draw();
 }
 
 function save() {
@@ -46,7 +50,6 @@ function save() {
     }).done(function () {
         $("#editRow").modal("hide");
         updateTable();
-       // filter();
         successNoty("Saved");
     });
 }
