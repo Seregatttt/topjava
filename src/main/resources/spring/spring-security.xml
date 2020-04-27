@@ -19,7 +19,7 @@
     <http>
         <intercept-url pattern="/login" access="permitAll()"/>
 
-        <intercept-url pattern="/**/admin/**" access="hasRoSecurityExpressionOperationsle('ROLE_ADMIN')"/>
+        <intercept-url pattern="/**/admin/**" access="hasRole('ADMIN')"/>
         <intercept-url pattern="/**" access="isAuthenticated()"/>
 
         <form-login login-page="/login" default-target-url="/meals"
