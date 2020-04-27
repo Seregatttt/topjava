@@ -47,7 +47,7 @@ function clickCheckBox(userId, isEnabled) {
     var checked = $("#chk"+userId).is(':checked');
     $.ajax({
         url: context.ajaxUrl + "changeEnabled/" + userId + "/" + isEnabled,
-        type: "GET"
+        type: "PUT"
     }).done(function () {
         //updateTable();
         if (checked) {
@@ -56,5 +56,7 @@ function clickCheckBox(userId, isEnabled) {
             $("#chk"+userId).attr("checked", true);
         };
         successNoty("done");
+    }).fail(function () {
+        $("#chk"+userId).attr("checked", !checked);
     });
 }
