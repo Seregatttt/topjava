@@ -17,9 +17,35 @@ function paintRowByExcess(row, data, dataIndex) {
     $(row).attr("data-mealExcess", data.excess);
 }
 
+$.ajaxSetup({
+    converters: {
+        "text json": function (result) {
+            // https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
+            let json = JSON.parse(result, function (k, v) {
+                if (k === 'dateTime') {
+                    var data3 = v.toString().replace('T', ' ').substr(0, 16);
+                    return data3;
+                }
+                return v;
+            });
+            return json;
+        }
+    }
+});
+
 $(function () {
     $('#datetimepicker').datetimepicker({
         format: 'Y-m-d H:i'
+    });
+
+    $('[type="date"]').datetimepicker({
+        timepicker: false,
+        format: 'Y-m-d'
+    });
+
+    $('[type="time"]').datetimepicker({
+        datepicker: false,
+        format: 'H:i'
     });
 
     makeEditable({
@@ -33,8 +59,7 @@ $(function () {
             "info": true,
             "columns": [
                 {
-                    "data": "dateTime",
-                    "render": renderDataTime
+                    "data": "dateTime"
                 },
                 {
                     "data": "description"
