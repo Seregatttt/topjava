@@ -17,11 +17,15 @@ function add() {
     $("#editRow").modal();
 }
 
+function replaceAll(str) {
+    return str.toString().replace('T', ' ').substr(0, 16);
+}
+
 function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(context.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
-            form.find("input[name='" + key + "']").val(value);
+            form.find("input[name='" + key + "']").val(key === "dateTime" ? replaceAll(value) : value);
         });
         $('#editRow').modal();
     });
@@ -44,10 +48,11 @@ function updateTableByData(data) {
 }
 
 function save() {
+    var data1 = form.serialize();
     $.ajax({
         type: "POST",
         url: context.ajaxUrl,
-        data: form.serialize()
+        data: data1
     }).done(function () {
         $("#editRow").modal("hide");
         context.updateTable();
@@ -93,4 +98,8 @@ function renderDeleteBtn(data, type, row) {
     if (type === "display") {
         return "<a onclick='deleteRow(" + row.id + ");'><span class='fa fa-remove'></span></a>";
     }
+}
+
+function renderDataTime(data, type, row) {
+    return replaceAll(data);
 }

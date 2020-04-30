@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MealsUtil {
+    public static final boolean DEFAULT_EXCESS = false;
 
     private MealsUtil() {
     }
@@ -39,5 +40,16 @@ public class MealsUtil {
 
     public static MealTo createTo(Meal meal, boolean excess) {
         return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+    }
+
+    public static Meal createNewFromTo(MealTo mealTo) {
+        return new Meal(mealTo.getId(), mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories());
+    }
+
+    public static Meal updateFromTo(Meal meal, MealTo mealTo) {
+        meal.setDateTime(mealTo.getDateTime());
+        meal.setDescription(mealTo.getDescription());
+        meal.setCalories(mealTo.getCalories());
+        return meal;
     }
 }

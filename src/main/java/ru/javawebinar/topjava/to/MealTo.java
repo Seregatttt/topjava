@@ -1,20 +1,38 @@
 package ru.javawebinar.topjava.to;
 
-import java.beans.ConstructorProperties;
+import org.hibernate.validator.constraints.Range;
+import org.springframework.format.annotation.DateTimeFormat;
+import ru.javawebinar.topjava.util.MealsUtil;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class MealTo extends BaseTo {
+public class MealTo extends BaseTo implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private final LocalDateTime dateTime;
+    @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime dateTime;
 
-    private final String description;
+    @NotBlank
+    @Size(min = 2, max = 120)
+    private String description;
 
-    private final int calories;
+    @NotNull
+    @Range(min = 10, max = 5000, message = "length must be between 10 and 5000 characters")
+    private int calories;
 
-    private final boolean excess;
+    @NotNull
+    private boolean excess = MealsUtil.DEFAULT_EXCESS;
 
-    @ConstructorProperties({"id", "dateTime", "description", "calories", "excess"})
+    public MealTo() {
+    }
+
+    //@ConstructorProperties({"id", "dateTime", "description", "calories", "excess"})
     public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
         super(id);
         this.dateTime = dateTime;
@@ -37,6 +55,22 @@ public class MealTo extends BaseTo {
 
     public boolean isExcess() {
         return excess;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCalories(int calories) {
+        this.calories = calories;
+    }
+
+    public void setExcess(boolean excess) {
+        this.excess = excess;
     }
 
     @Override

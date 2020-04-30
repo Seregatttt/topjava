@@ -1,10 +1,10 @@
-var userAjaxUrl = "ajax/admin/users/";
+let AjaxUrl = "ajax/admin/users/";
 
 function enable(chkbox, id) {
     var enabled = chkbox.is(":checked");
 //  https://stackoverflow.com/a/22213543/548473
     $.ajax({
-        url: userAjaxUrl + id,
+        url: AjaxUrl + id,
         type: "POST",
         data: "enabled=" + enabled
     }).done(function () {
@@ -15,13 +15,12 @@ function enable(chkbox, id) {
     });
 }
 
-// $(document).ready(function () {
 $(function () {
     makeEditable({
-            ajaxUrl: userAjaxUrl,
+            ajaxUrl: AjaxUrl,
             datatableApi: $("#datatable").DataTable({
                 "ajax": {
-                    "url": userAjaxUrl,
+                    "url": AjaxUrl,
                     "dataSrc": ""
                 },
                 "paging": false,
@@ -84,7 +83,7 @@ $(function () {
                 }
             }),
             updateTable: function () {
-                $.get(userAjaxUrl, updateTableByData);
+                $.get(AjaxUrl, updateTableByData);
             }
         }
     );
