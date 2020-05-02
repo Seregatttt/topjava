@@ -1,16 +1,16 @@
-let AjaxUrl = "ajax/profile/meals/";  //"ajax/admin/users/";  by analogy users for easy merge !!!
+let ajaxUrl = "ajax/profile/meals/";  //"ajax/admin/users/";  by analogy users for easy merge !!!
 
 function updateFilteredTable() {
     $.ajax({
         type: "GET",
-        url: AjaxUrl + "filter",
+        url: ajaxUrl + "filter",
         data: $("#filter").serialize()
     }).done(updateTableByData);
 }
 
 function clearFilter() {
     $("#filter")[0].reset();
-    $.get(AjaxUrl, updateTableByData);
+    $.get(ajaxUrl, updateTableByData);
 }
 
 function paintRowByExcess(row, data, dataIndex) {
@@ -49,10 +49,10 @@ $(function () {
     });
 
     makeEditable({
-        ajaxUrl: AjaxUrl,
+        ajaxUrl: ajaxUrl,
         datatableApi: $("#datatable").DataTable({
             "ajax": {
-                "url": AjaxUrl,
+                "url": ajaxUrl,
                 "dataSrc": ""
             },
             "paging": false,

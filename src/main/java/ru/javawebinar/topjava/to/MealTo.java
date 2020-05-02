@@ -24,7 +24,7 @@ public class MealTo extends BaseTo implements Serializable {
 
     @NotNull
     @Range(min = 10, max = 5000, message = "length must be between 10 and 5000 characters")
-    private int calories;
+    private Integer calories;
 
     @NotNull
     private boolean excess = MealsUtil.DEFAULT_EXCESS;
