@@ -6,17 +6,26 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.UserTestData;
+import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
+import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.time.Month;
+import java.util.Collections;
+import java.util.Date;
+
+import static java.time.LocalDateTime.of;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.*;
@@ -134,5 +143,56 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         assertFalse(userService.get(USER_ID).isEnabled());
+    }
+
+    @Test
+    void createNotValid() throws Exception {
+        User newUser = new User(null, "New", "new@gmail.com", "newPass", 500000,
+                false, new Date(), Collections.singleton(Role.USER));
+
+        String jsonWithPass = JsonUtil.writeAdditionProps(newUser, "password", "newPass");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPass)
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())//422
+                .andExpect(jsonPath("$.type").value(ErrorType.VALIDATION_ERROR.name()))
+                .andExpect(jsonPath("$.detail", hasItem("[caloriesPerDay] must be between 10 and 10000")))
+        ;
+    }
+
+    @Test
+    void updateNotValid() throws Exception {
+        User newUser = new User(null, "New", "new@gmail.com", "newPass", 500000,
+                false, new Date(), Collections.singleton(Role.USER));
+
+        String jsonWithPass = JsonUtil.writeAdditionProps(newUser, "password", "newPass");
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPass)
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())//422
+                .andExpect(jsonPath("$.type").value(ErrorType.VALIDATION_ERROR.name()))
+                .andExpect(jsonPath("$.detail", hasItem("[caloriesPerDay] must be between 10 and 10000")))
+        ;
+    }
+
+    @Test
+    void createDubleEmail() throws Exception {
+        User newUser = new User(null, "NewUser", "admin@gmail.com", "newPass", 2000,
+                false, new Date(), Collections.singleton(Role.USER));
+
+        String jsonWithPass = JsonUtil.writeAdditionProps(newUser, "password", "newPass");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPass)
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+              //  .andExpect(status().isUnprocessableEntity())//422
+              //  .andExpect(jsonPath("$.type").value(ErrorType.VALIDATION_ERROR.name()))
+              //  .andExpect(jsonPath("$.detail", hasItem("[caloriesPerDay] must be between 10 and 10000")))
+        ;
     }
 }
