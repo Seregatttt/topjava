@@ -5,7 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.servlet.support.*;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 
@@ -51,7 +51,7 @@ public class MealRestController extends AbstractMealController {
     public ResponseEntity<Meal> createWithLocation(@Valid @RequestBody Meal meal) {
         Meal created = super.create(meal);
 
-        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+        URI uriOfNewResource =  ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
 

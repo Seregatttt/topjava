@@ -25,10 +25,8 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -41,13 +39,6 @@ public class ExceptionInfoHandler {
     @Autowired
     private MessageSource messageSource;
 
-    private static Map<String, String> constraintCodeMap = new HashMap<String, String>() {
-        {
-            put("users_unique_email_idx", "exception.users.duplicate_email");
-            put("meals_unique_user_datetime_idx", "exception.meals.duplicate_datetime");
-        }
-    };
-
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(NotFoundException.class)
@@ -58,16 +49,14 @@ public class ExceptionInfoHandler {
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        String rootMsg = ValidationUtil.getRootCause(e).getMessage();
-        //https://stackoverflow.com/questions/2109476/how-to-handle-dataintegrityviolationexception-in-spring
-        if (rootMsg != null) {
-            Optional<Map.Entry<String, String>> entry = constraintCodeMap.entrySet().stream()
-                    .filter((it) -> rootMsg.contains(it.getKey()))
-                    .findAny();
-            if (entry.isPresent()) {
-                e=new DataIntegrityViolationException(
-                        messageSource.getMessage(entry.get().getValue(), null, LocaleContextHolder.getLocale()));
-            }
+        String msg = e.getCause().getCause().getMessage();
+        if (msg.contains("users_unique_email_idx")) {
+            String errMsg = messageSource.getMessage("exception.users.duplicate_email", null, LocaleContextHolder.getLocale());
+            return logAndGetErrorInfo(req, e, true, DATA_ERROR, errMsg);
+        }
+        if (msg.contains("meals_unique_user_datetime_idx")) {
+            String errMsg = messageSource.getMessage("exception.meals.duplicate_datetime", null, LocaleContextHolder.getLocale());
+            return logAndGetErrorInfo(req, e, true, DATA_ERROR, errMsg);
         }
         return logAndGetErrorInfo(req, e, true, DATA_ERROR);
     }
