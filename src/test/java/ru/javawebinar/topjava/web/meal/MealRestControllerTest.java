@@ -142,7 +142,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())//422
                 .andExpect(jsonPath("$.type").value(ErrorType.VALIDATION_ERROR.name()))
-                .andExpect(jsonPath("$.detail",hasItem("[calories] must be between 10 and 5000")))
+                .andExpect(jsonPath("$.detail",hasItem("[calories] должно находиться в диапазоне от 10 до 5000")))
               ;
     }
 
@@ -156,7 +156,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())//422
                 .andExpect(jsonPath("$.type").value(ErrorType.VALIDATION_ERROR.name()))
-                .andExpect(jsonPath("$.detail",hasItem("[calories] must be between 10 and 5000")))
+                .andExpect(jsonPath("$.detail",hasItem("[calories] должно находиться в диапазоне от 10 до 5000")))
         ;
     }
 }

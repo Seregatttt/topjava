@@ -25,8 +25,6 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -63,19 +61,14 @@ public class ExceptionInfoHandler {
 
     //https://mkyong.com/spring-boot/spring-rest-validation-example/
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorInfo notValidException(HttpServletRequest req, MethodArgumentNotValidException e) {
-        BindingResult result = e.getBindingResult();
-        String[] arrayError = result.getFieldErrors().stream()
-                .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
-                .toArray(String[]::new);
-        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR, arrayError);
-    }
+    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    public ErrorInfo notValidException(HttpServletRequest req, Exception e) {
+        BindingResult result =
+                (e instanceof MethodArgumentNotValidException) ?
+                        ((MethodArgumentNotValidException) e).getBindingResult()
+                        :
+                        ((BindException) e).getBindingResult();
 
-    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
-    @ExceptionHandler(BindException.class)
-    public ErrorInfo bindException(HttpServletRequest req, BindException e) {
-        BindingResult result = e.getBindingResult();
         String[] arrayError = result.getFieldErrors().stream()
                 .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
                 .toArray(String[]::new);

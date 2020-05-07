@@ -102,7 +102,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
-                .content(JsonUtil.writeValue(updated)))
+                .content(UserTestData.jsonWithPassword(updated, "newPass")))
                 .andExpect(status().isNoContent());
 
         USER_MATCHER.assertMatch(userService.get(USER_ID), updated);
@@ -158,7 +158,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())//422
                 .andExpect(jsonPath("$.type").value(ErrorType.VALIDATION_ERROR.name()))
-                .andExpect(jsonPath("$.detail", hasItem("[caloriesPerDay] must be between 10 and 10000")))
+                .andExpect(jsonPath("$.detail", hasItem("[caloriesPerDay] должно находиться в диапазоне от 10 до 10000")))
         ;
     }
 
@@ -175,7 +175,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())//422
                 .andExpect(jsonPath("$.type").value(ErrorType.VALIDATION_ERROR.name()))
-                .andExpect(jsonPath("$.detail", hasItem("[caloriesPerDay] must be between 10 and 10000")))
+                .andExpect(jsonPath("$.detail", hasItem("[caloriesPerDay] должно находиться в диапазоне от 10 до 10000")))
         ;
     }
 
